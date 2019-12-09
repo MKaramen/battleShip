@@ -7,7 +7,7 @@ const pieces = [];
 
 // Send pieces to class Boat 
 let tempPiece = [];
-let boat;
+let allBoat = [];
 
 // Use for the preview 
 let previewPieces = [];
@@ -20,29 +20,43 @@ let placing = true;
 let over = true;
 let valideMove = true;
 let free = true;
+let startGame = false;
 
 function setup() {
     createCanvas(board.cell * board.size * 2 + 90, board.cell * board.size);
-
     board.createBoard();
-
     shoot.createBoard();
-
 
     // Create button 
     const button = document.createElement('button');
     button.setAttribute('id', 'button');
-    button.innerHTML = 'Click Me';
+    button.innerHTML = 'Start the game';
     const body = document.querySelector('body');
     body.appendChild(button);
 
-    document.getElementById('button').addEventListener('click', () => {
+    document.getElementById('button').addEventListener('click', async () => {
         console.log('clicked');
-        if (sizePieces == 0) {
+        if (sizePieces == 0 && !startGame) {
             placing = false;
+            // Execute socket.io and send all pieces  
+            console.log(pieces);
+            options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(pieces)
+            }
+
+            const response = await fetch('/position', options);
+            const object = await response.json();
+            console.log(object);
             console.log('done');
-        } else {
+            startGame = true;
+        } else if (sizePieces > 0) {
             console.log("need to place all pieces");
+        } else {
+            console.log('Game started already');
         }
     });
 
@@ -83,7 +97,8 @@ function mousePressed() {
                     tempPiece.push(new Pieces(x + i, y))
                     board.board[y][x + i] = 1;
                 }
-                boat = new Boat(tempPiece)
+                let boat = new Boat(tempPiece)
+                allBoat.push(boat);
                 sizePieces--;
 
             } else {
@@ -107,17 +122,16 @@ const mouseOver = () => {
             y: (y * board.cell)
         };
     }
+
     valideMove = true;
+
     previewPieces.forEach((elem, i) => {
         fill(0, 0, 255, 90);
-        // board.board[elem.y][elem.x] = 2;
         rect(elem.x, elem.y, board.cell, board.cell);
-
 
         const x = Math.floor(elem.x / board.cell);
         const y = Math.floor(elem.y / board.cell);
 
-        console.log(x);
         if (x > board.size - 1 || x < 0 || board.board[y][x] == 1) {
             console.log('in');
             valideMove = false;
