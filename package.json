@@ -19,6 +19,7 @@
   "homepage": "https://github.com/MKaramen/battleShip#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "nodemon": "^2.0.1"
+    "nodemon": "^2.0.1",
+    "socket.io": "^2.3.0"
   }
 }

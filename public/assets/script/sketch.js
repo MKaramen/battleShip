@@ -1,3 +1,6 @@
+const socket = io();
+let turn = false;
+
 // Create Board
 const board = new Board(10, 0, 0);
 const shoot = new Board(10, 390, 0);
@@ -39,6 +42,7 @@ function setup() {
         if (sizePieces == 0 && !startGame) {
             placing = false;
             // Execute socket.io and send all pieces  
+            socket.emit('playerIsReady', socket.id);
             console.log(pieces);
             options = {
                 method: 'POST',
@@ -63,7 +67,7 @@ function setup() {
 }
 
 function draw() {
-    background(0);
+    background(255);
     board.display();
     shoot.display();
     // board.board[i][j] = new Pieces(i, j);
@@ -108,6 +112,12 @@ function mousePressed() {
         }
     }
 
+    if (turn) {
+        console.log("It's my turn");
+        turn = false;
+        socket.emit('turnOver', socket.id);
+        console.log('Turn Over');
+    }
 
 }
 
@@ -138,3 +148,24 @@ const mouseOver = () => {
         }
     })
 }
+
+// Socket Events
+socket.on('waitingOtherPlayer', () => {
+    console.log('Other player is not ready');
+})
+
+socket.on('gameStarts', idPlayer => {
+    if (idPlayer == socket.id) {
+        console.log('You start to shoot');
+        turn = true;
+    } else {
+        console.log('Bad luck you are second');
+    }
+});
+
+socket.on('turnStart', playerId => {
+    if (socket.id != playerId) {
+        turn = true;
+        console.log('turn starts');
+    }
+});

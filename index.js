@@ -1,16 +1,47 @@
 const express = require("express");
+const http = require('http');
 const app = express();
+const server = http.createServer(app);
+const io = require("socket.io")(server);
 
 app.use(express.json());
-app.use(express.static('public'))
+app.use(express.static("public"));
 
-app.listen(3000, () => {
+server.listen(3000, () => {
     console.log("Listening 3000");
 });
 
-app.post('/position', (req, res) => {
+app.post("/position", (req, res) => {
     const data = req.body;
     res.json({
         kek: data
+    });
+});
+
+let players = [];
+
+io.on("connection", socket => {
+    console.log("a user is connected");
+    // When player is ready get the socket id of the player 
+    socket.on('playerIsReady', (playerId) => {
+        players.push(playerId);
+        if (players.length == 2) {
+            console.log('Both connected');
+            const rand = Math.floor(Math.random());
+            io.emit('gameStarts', players[rand]);
+        } else {
+            socket.emit('waitingOtherPlayer');
+        }
     })
+
+    socket.on('turnOver', playerId => {
+        io.emit('turnStart', playerId);
+    });
+
+    // when disconnect empy the array so we know one of the player left 
+    socket.on('disconnect', socket => {
+        players = [];
+    })
+
+
 });
