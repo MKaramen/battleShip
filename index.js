@@ -43,7 +43,7 @@ io.on("connection", socket => {
                     if (coord.x == x - 13 && coord.y == y) {
                         console.log('touche');
                         if (obj.idPlayer != playerId) {
-                            io.emit('touche', obj.idPlayer);
+                            io.emit('touche', obj.idPlayer, x - 13, y);
                         }
                     }
                 })

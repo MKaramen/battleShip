@@ -5,7 +5,7 @@ let turn = false;
 const board = new Board(10, 0, 0);
 const shoot = new Board(10, 390, 0);
 
-// Keep track of all pieces 
+// Keep track of all pieces - USELESS MNT :)  
 let pieces = [];
 
 // Send pieces to class Boat 
@@ -30,6 +30,7 @@ let cleanShot = true;
 
 function setup() {
     createCanvas(board.cell * board.size * 2 + 90, board.cell * board.size);
+    // Create the board
     board.createBoard();
     shoot.createBoard();
 
@@ -78,9 +79,9 @@ function draw() {
     board.display();
     shoot.display();
     // board.board[i][j] = new Pieces(i, j);
-    pieces.forEach(piece => {
-        piece.display();
-    })
+    // pieces.forEach(piece => {
+    //     piece.display();
+    // })
 
     if (mouseX < 0 || mouseX > 690 || mouseY < 0 || mouseY > 300) {
 
@@ -196,8 +197,10 @@ socket.on('turnStart', playerId => {
     }
 });
 
-socket.on('touche', (playerId) => {
+socket.on('touche', (playerId, x, y) => {
     if (playerId == socket.id) {
-        console.log('se sui touze');
+        board.board[y][x] = 2
+    } else {
+        shoot.board[y][x] = 4;
     }
 })
