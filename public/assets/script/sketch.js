@@ -6,12 +6,14 @@ const board = new Board(10, 0, 0);
 const shoot = new Board(10, 390, 0);
 
 // Keep track of all pieces 
-const pieces = [];
+let pieces = [];
 
 // Send pieces to class Boat 
 let tempPiece = [];
 let allBoat = [];
 
+// Send missiles
+let allMissiles = [];
 // Use for the preview 
 let previewPieces = [];
 
@@ -24,6 +26,7 @@ let over = true;
 let valideMove = true;
 let free = true;
 let startGame = false;
+let cleanShot = true;
 
 function setup() {
     createCanvas(board.cell * board.size * 2 + 90, board.cell * board.size);
@@ -43,13 +46,17 @@ function setup() {
             placing = false;
             // Execute socket.io and send all pieces  
             socket.emit('playerIsReady', socket.id);
-            console.log(pieces);
+
+            const data = {
+                allPieces: pieces,
+                idPlayer: socket.id
+            }
             options = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(pieces)
+                body: JSON.stringify(data)
             }
 
             const response = await fetch('/position', options);
@@ -81,6 +88,9 @@ function draw() {
         mouseOver();
     }
 
+    allMissiles.forEach(missiles => {
+        missiles.display()
+    })
 
 }
 
@@ -89,10 +99,9 @@ function mousePressed() {
     over = false;
     const x = Math.floor(mouseX / board.cell);
     const y = Math.floor(mouseY / board.cell);
-    // Check if inside canvas
-    if (mouseX < 0 || mouseX > 690 || mouseY < 0 || mouseY > 300) {
-
-    } else {
+    console.log(x, y);
+    // Check if inside canvas LEFT 
+    if ((mouseX > 0 || mouseX < 690) && (mouseY > 0 || mouseY < 300)) {
         if (sizePieces > 0 && valideMove) {
             if (x < board.board.length && y < board.board.length && x > -1 && y > -1) {
                 tempPiece = [];
@@ -112,12 +121,30 @@ function mousePressed() {
         }
     }
 
+    // Check if in canvas RIGHT SIDE 
+    // put it inside if turn = true 
     if (turn) {
-        console.log("It's my turn");
-        turn = false;
-        socket.emit('turnOver', socket.id);
-        console.log('Turn Over');
+        if ((x > 12 && x < 23) && (y > -1 && y < 10)) {
+            console.log("in1");
+            cleanShot = true;
+            allMissiles.forEach(missile => {
+                if (missile.x == x && missile.y == y) {
+                    console.log('You already shot there');
+                    cleanShot = false;
+                }
+            })
+
+            if (cleanShot) {
+                allMissiles.push(new Missile(x, y, board.cell))
+                turn = false;
+                socket.emit('turnOver', socket.id, x, y);
+                console.log('My turn is over');
+            }
+
+
+        }
     }
+
 
 }
 
@@ -143,7 +170,6 @@ const mouseOver = () => {
         const y = Math.floor(elem.y / board.cell);
 
         if (x > board.size - 1 || x < 0 || board.board[y][x] == 1) {
-            console.log('in');
             valideMove = false;
         }
     })
@@ -169,3 +195,9 @@ socket.on('turnStart', playerId => {
         console.log('turn starts');
     }
 });
+
+socket.on('touche', (playerId) => {
+    if (playerId == socket.id) {
+        console.log('se sui touze');
+    }
+})

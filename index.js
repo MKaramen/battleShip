@@ -13,12 +13,14 @@ server.listen(3000, () => {
 
 app.post("/position", (req, res) => {
     const data = req.body;
+    positionsBoat.push(data)
     res.json({
-        kek: data
+        dat: data
     });
 });
 
 let players = [];
+let positionsBoat = [];
 
 io.on("connection", socket => {
     console.log("a user is connected");
@@ -34,13 +36,26 @@ io.on("connection", socket => {
         }
     })
 
-    socket.on('turnOver', playerId => {
+    socket.on('turnOver', (playerId, x, y) => {
+        positionsBoat.forEach(obj => {
+            if (obj.idPlayer != playerId) {
+                obj.allPieces.forEach(coord => {
+                    if (coord.x == x - 13 && coord.y == y) {
+                        console.log('touche');
+                        if (obj.idPlayer != playerId) {
+                            io.emit('touche', obj.idPlayer);
+                        }
+                    }
+                })
+            }
+        })
         io.emit('turnStart', playerId);
     });
 
     // when disconnect empy the array so we know one of the player left 
     socket.on('disconnect', socket => {
         players = [];
+        positionsBoat = [];
     })
 
 
