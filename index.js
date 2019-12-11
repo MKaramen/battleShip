@@ -21,6 +21,7 @@ app.post("/position", (req, res) => {
 
 let players = [];
 let positionsBoat = [];
+let hitted = false;
 
 io.on("connection", socket => {
     console.log("a user is connected");
@@ -37,14 +38,19 @@ io.on("connection", socket => {
     })
 
     socket.on('turnOver', (playerId, x, y) => {
+        hitted = false;
         positionsBoat.forEach(obj => {
             if (obj.idPlayer != playerId) {
                 obj.allPieces.forEach(coord => {
                     if (coord.x == x - 13 && coord.y == y) {
                         console.log('touche');
                         if (obj.idPlayer != playerId) {
+                            hitted = true;
                             io.emit('touche', obj.idPlayer, x - 13, y);
                         }
+                    }
+                    if (!hitted) {
+                        io.emit('missed', obj.idPlayer, x - 13, y);
                     }
                 })
             }
@@ -56,6 +62,7 @@ io.on("connection", socket => {
     socket.on('disconnect', socket => {
         players = [];
         positionsBoat = [];
+        io.emit('userDisconnect')
     })
 
 

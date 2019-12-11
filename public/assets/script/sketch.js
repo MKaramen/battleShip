@@ -42,7 +42,6 @@ function setup() {
     body.appendChild(button);
 
     document.getElementById('button').addEventListener('click', async () => {
-        console.log('clicked');
         if (sizePieces == 0 && !startGame) {
             placing = false;
             // Execute socket.io and send all pieces  
@@ -62,7 +61,6 @@ function setup() {
 
             const response = await fetch('/position', options);
             const object = await response.json();
-            console.log(object);
             console.log('done');
             startGame = true;
         } else if (sizePieces > 0) {
@@ -77,7 +75,7 @@ function setup() {
 function draw() {
     background(255);
     board.display();
-    shoot.display();
+
     // board.board[i][j] = new Pieces(i, j);
     // pieces.forEach(piece => {
     //     piece.display();
@@ -92,6 +90,7 @@ function draw() {
     allMissiles.forEach(missiles => {
         missiles.display()
     })
+    shoot.display();
 
 }
 
@@ -126,7 +125,6 @@ function mousePressed() {
     // put it inside if turn = true 
     if (turn) {
         if ((x > 12 && x < 23) && (y > -1 && y < 10)) {
-            console.log("in1");
             cleanShot = true;
             allMissiles.forEach(missile => {
                 if (missile.x == x && missile.y == y) {
@@ -197,10 +195,24 @@ socket.on('turnStart', playerId => {
     }
 });
 
+// Show if touched or not
 socket.on('touche', (playerId, x, y) => {
+    console.log('touche');
     if (playerId == socket.id) {
         board.board[y][x] = 2
-    } else {
+    }
+    if (playerId != socket.id) {
         shoot.board[y][x] = 4;
     }
+})
+
+socket.on('missed', (playerId, x, y) => {
+    console.log('missed');
+    if (playerId == socket.id) {
+        board.board[y][x] = 5;
+    }
+})
+
+socket.on('userDisconnect', () => {
+    window.location.reload();
 })

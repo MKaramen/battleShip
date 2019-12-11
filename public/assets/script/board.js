@@ -41,8 +41,16 @@ class Board {
                         fill(255, 0, 255);
                         rect(j * this.cell + this.x, i * this.cell + this.y, this.cell, this.cell);
                         break;
+                    case 3:
+                        fill(0, 255, 0);
+                        rect(j * this.cell + this.x, i * this.cell + this.y, this.cell, this.cell);
+                        break;
                     case 4:
-                        fill(255, 0, 255);
+                        fill(0, 255, 255);
+                        rect(j * this.cell + this.x, i * this.cell + this.y, this.cell, this.cell);
+                        break;
+                    case 5:
+                        fill(0);
                         rect(j * this.cell + this.x, i * this.cell + this.y, this.cell, this.cell);
                         break;
                 }

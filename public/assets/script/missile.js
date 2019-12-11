@@ -9,9 +9,4 @@ class Missile {
         fill(0, 255, 0)
         rect(this.x * this.cellSize, this.y * this.cellSize, this.cellSize, this.cellSize)
     }
-
-    touched() {
-        fill(255, 0, 0);
-        rect(this.x * this.cellSize, this.y * this.cellSize, this.cellSize, this.cellSize)
-    }
 }
