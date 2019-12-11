@@ -1,5 +1,5 @@
 const socket = io();
-let turn = false;
+const p = document.getElementById('target');
 
 // Create Board
 const board = new Board(10, 0, 0);
@@ -19,18 +19,17 @@ let previewPieces = [];
 
 // Use for the size of the boat 
 let sizePieces = 5;
-console.log(board);
 
-let placing = true;
-let over = true;
+//Boolean
+let turn = false;
 let valideMove = true;
-let free = true;
 let startGame = false;
 let cleanShot = true;
 
 function setup() {
     createCanvas(board.cell * board.size * 2 + 90, board.cell * board.size);
-    // Create the board
+
+    // Create the boards
     board.createBoard();
     shoot.createBoard();
 
@@ -41,9 +40,9 @@ function setup() {
     const body = document.querySelector('body');
     body.appendChild(button);
 
+    // On click send data to the server and check if all pieces are placed 
     document.getElementById('button').addEventListener('click', async () => {
         if (sizePieces == 0 && !startGame) {
-            placing = false;
             // Execute socket.io and send all pieces  
             socket.emit('playerIsReady', socket.id);
 
@@ -64,8 +63,10 @@ function setup() {
             console.log('done');
             startGame = true;
         } else if (sizePieces > 0) {
-            console.log("need to place all pieces");
+            p.innerHTML = "You have to place all boats"
+            // console.log("need to place all pieces");
         } else {
+            p.innerHTML = 'Game Started Already'
             console.log('Game started already');
         }
     });
@@ -75,31 +76,17 @@ function setup() {
 function draw() {
     background(255);
     board.display();
-
-    // board.board[i][j] = new Pieces(i, j);
-    // pieces.forEach(piece => {
-    //     piece.display();
-    // })
-
-    if (mouseX < 0 || mouseX > 690 || mouseY < 0 || mouseY > 300) {
-
-    } else {
+    if ((mouseX > 0 && mouseX < 690) && (mouseY > 0 && mouseY < 300)) {
         mouseOver();
     }
-
-    allMissiles.forEach(missiles => {
-        missiles.display()
-    })
     shoot.display();
 
 }
 
 // A mettre dans class piece 
 function mousePressed() {
-    over = false;
     const x = Math.floor(mouseX / board.cell);
     const y = Math.floor(mouseY / board.cell);
-    console.log(x, y);
     // Check if inside canvas LEFT 
     if ((mouseX > 0 || mouseX < 690) && (mouseY > 0 || mouseY < 300)) {
         if (sizePieces > 0 && valideMove) {
@@ -115,7 +102,8 @@ function mousePressed() {
                 sizePieces--;
 
             } else {
-                console.log("Invalid move");
+                p.innerHTML = "Invalid Move"
+                // console.log("Invalid move");
             }
 
         }
@@ -128,16 +116,19 @@ function mousePressed() {
             cleanShot = true;
             allMissiles.forEach(missile => {
                 if (missile.x == x && missile.y == y) {
-                    console.log('You already shot there');
+                    p.innerHTML = 'You already shot there'
+                    // console.log('You already shot there');
                     cleanShot = false;
                 }
             })
 
             if (cleanShot) {
                 allMissiles.push(new Missile(x, y, board.cell))
+                shoot.board[y][x - 13] = 3;
                 turn = false;
                 socket.emit('turnOver', socket.id, x, y);
-                console.log('My turn is over');
+                p.innerHTML = "Opponent's turn"
+                // console.log('My turn is over');
             }
 
 
@@ -176,28 +167,32 @@ const mouseOver = () => {
 
 // Socket Events
 socket.on('waitingOtherPlayer', () => {
+    p.innerHTML = "Other player is not ready"
     console.log('Other player is not ready');
 })
 
 socket.on('gameStarts', idPlayer => {
     if (idPlayer == socket.id) {
-        console.log('You start to shoot');
+        p.innerHTML = 'You start to shoot'
+        // console.log('You start to shoot');
         turn = true;
     } else {
-        console.log('Bad luck you are second');
+        p.innerHTML = 'Bad Luck you are second';
+        // console.log('Bad luck you are second');
     }
 });
 
 socket.on('turnStart', playerId => {
     if (socket.id != playerId) {
         turn = true;
-        console.log('turn starts');
+        p.innerHTML = "It's your turn !"
+        // console.log('turn starts');
     }
 });
 
-// Show if touched or not
+// Touch or miss
 socket.on('touche', (playerId, x, y) => {
-    console.log('touche');
+    p.innerHTML = 'Touche !'
     if (playerId == socket.id) {
         board.board[y][x] = 2
     }
@@ -207,12 +202,13 @@ socket.on('touche', (playerId, x, y) => {
 })
 
 socket.on('missed', (playerId, x, y) => {
-    console.log('missed');
+    p.innerHTML = "You missed the shot !"
     if (playerId == socket.id) {
         board.board[y][x] = 5;
     }
 })
 
+// Make the page reload when a user disconnect 
 socket.on('userDisconnect', () => {
     window.location.reload();
 })
