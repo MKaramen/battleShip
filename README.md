@@ -12,7 +12,7 @@
 </ul>
 
 <h2> Preview<h2>
-<img  width='250px' src="public/assets/screenShot/demo.png">
+<img  width='500px' src="public/assets/screenShot/demo.png">
 
 <h2> Features </h2>
 <ul>
