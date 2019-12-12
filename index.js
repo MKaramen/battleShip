@@ -37,6 +37,7 @@ io.on("connection", socket => {
         }
     })
 
+
     socket.on('turnOver', (playerId, x, y) => {
         hitted = false;
         positionsBoat.forEach(obj => {
@@ -56,7 +57,17 @@ io.on("connection", socket => {
             }
         })
         io.emit('turnStart', playerId);
+
+
     });
+    // Diminish count boat of your opponent when you destroy a boat 
+    socket.on('boatDestroyed', playerId => {
+        io.emit('reduceCount', playerId);
+    })
+
+    socket.on('gameOver', playerId => {
+        io.emit('result', playerId);
+    })
 
     // when disconnect empy the array so we know one of the player left 
     socket.on('disconnect', socket => {

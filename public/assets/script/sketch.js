@@ -1,6 +1,9 @@
 const socket = io();
 const p = document.getElementById('target');
-
+const rotButton = document.getElementById('kek');
+const count = document.getElementById('count');
+const countEnnemyElement = document.getElementById('countEnnemy');
+let countEnnemy = 5;
 // Create Board
 const board = new Board(10, 0, 0);
 const shoot = new Board(10, 390, 0);
@@ -25,6 +28,27 @@ let turn = false;
 let valideMove = true;
 let startGame = false;
 let cleanShot = true;
+let rotating = false;
+
+// Remove boat when shoot 
+const removePieces = (array, x, y) => {
+    array.forEach((boat, j) => {
+
+        boat.pieces.forEach((piece, i) => {
+            if (piece.x == x && piece.y == y) {
+                boat.pieces.splice(i, 1)
+                if (boat.pieces.length == 0) {
+                    array.splice(j, 1);
+                    socket.emit('boatDestroyed', socket.id);
+                    if (allBoat.length == 0) {
+                        socket.emit('gameOver');
+                    }
+                }
+            }
+        })
+    })
+    console.log(allBoat);
+};
 
 function setup() {
     createCanvas(board.cell * board.size * 2 + 90, board.cell * board.size);
@@ -45,7 +69,7 @@ function setup() {
         if (sizePieces == 0 && !startGame) {
             // Execute socket.io and send all pieces  
             socket.emit('playerIsReady', socket.id);
-
+            console.log(allBoat);
             const data = {
                 allPieces: pieces,
                 idPlayer: socket.id
@@ -71,6 +95,12 @@ function setup() {
         }
     });
 
+    rotButton.addEventListener('click', () => {
+        rotating = !rotating;
+        console.log(rotating);
+        console.log('clicked');
+    })
+
 }
 
 function draw() {
@@ -80,6 +110,7 @@ function draw() {
         mouseOver();
     }
     shoot.display();
+    count.innerHTML = `Your Boat Count : ${allBoat.length}`
 
 }
 
@@ -90,7 +121,16 @@ function mousePressed() {
     // Check if inside canvas LEFT 
     if ((mouseX > 0 || mouseX < 690) && (mouseY > 0 || mouseY < 300)) {
         if (sizePieces > 0 && valideMove) {
-            if (x < board.board.length && y < board.board.length && x > -1 && y > -1) {
+            if (rotating) {
+                tempPiece = [];
+                for (let i = 0; i < sizePieces; i++) {
+                    pieces.push(new Pieces(x, y + i));
+                    tempPiece.push(new Pieces(x, y + i))
+                    board.board[y + i][x] = 1;
+                }
+                allBoat.push(new Boat(tempPiece));
+                sizePieces--;
+            } else if (x < board.board.length && y < board.board.length && x > -1 && y > -1) {
                 tempPiece = [];
                 for (let i = 0; i < sizePieces; i++) {
                     pieces.push(new Pieces(x + i, y));
@@ -140,14 +180,23 @@ function mousePressed() {
 
 const mouseOver = () => {
     previewPieces = [];
-    for (let i = 0; i < sizePieces; i++) {
+    const x = Math.floor(mouseX / board.cell);
+    const y = Math.floor(mouseY / board.cell);
 
-        const x = Math.floor(mouseX / board.cell);
-        const y = Math.floor(mouseY / board.cell);
-        previewPieces[i] = {
-            x: (x * board.cell + i * board.cell),
-            y: (y * board.cell)
-        };
+    if (rotating) {
+        for (let i = 0; i < sizePieces; i++) {
+            previewPieces[i] = {
+                x: (x * board.cell),
+                y: (y * board.cell + i * board.cell)
+            };
+        }
+    } else {
+        for (let i = 0; i < sizePieces; i++) {
+            previewPieces[i] = {
+                x: (x * board.cell + i * board.cell),
+                y: (y * board.cell)
+            };
+        }
     }
 
     valideMove = true;
@@ -159,7 +208,15 @@ const mouseOver = () => {
         const x = Math.floor(elem.x / board.cell);
         const y = Math.floor(elem.y / board.cell);
 
-        if (x > board.size - 1 || x < 0 || board.board[y][x] == 1) {
+        if (y > 0 && y < board.size - 1) {
+            if (board.board[y][x] == 1) {
+                valideMove = false;
+            }
+        }
+
+
+        if ((x > board.size - 1 || x < 0) || (y > board.size - 1 || y < 0)) {
+
             valideMove = false;
         }
     })
@@ -188,6 +245,11 @@ socket.on('turnStart', playerId => {
         p.innerHTML = "It's your turn !"
         // console.log('turn starts');
     }
+    if (socket.id == playerId) {
+        setTimeout(() => {
+            p.innerHTML = "Other player's turn"
+        }, 1000);
+    }
 });
 
 // Touch or miss
@@ -195,6 +257,7 @@ socket.on('touche', (playerId, x, y) => {
     p.innerHTML = 'Touche !'
     if (playerId == socket.id) {
         board.board[y][x] = 2
+        removePieces(allBoat, x, y);
     }
     if (playerId != socket.id) {
         shoot.board[y][x] = 4;
@@ -211,4 +274,26 @@ socket.on('missed', (playerId, x, y) => {
 // Make the page reload when a user disconnect 
 socket.on('userDisconnect', () => {
     window.location.reload();
+})
+
+// Reduce count ennemy when boat is destroyed 
+socket.on('reduceCount', playerId => {
+    if (socket.id != playerId) {
+        if (p.innerHTML == 'Touche !') {
+            setTimeout(() => {
+                p.innerHTML = 'You destroyed a boat !'
+            }, 1000)
+        }
+        countEnnemy--;
+        countEnnemyElement.innerHTML = `Ennemy Boat Count : ${countEnnemy}`;
+    }
+})
+
+socket.on('result', playerId => {
+    if (socket.id != playerId) {
+        p.innerHTML = 'You win'
+        window.location.reload();
+    } else {
+        p.innerHTML = 'You lose'
+    }
 })
