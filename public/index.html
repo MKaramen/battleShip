@@ -6,20 +6,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>Document</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 </head>
 
 <body>
-  <div class="ally">
-    <p id='target'>Place all your boats (5) on the board below (Left Click)</p>
-    <p id='count'>Your Boat Count</p>
-    <p>Your Board</p>
-    <button id='kek'>Rotate</button>
+  <header>
+    <h1>Welcome to the Battleship Game</h1>
+  </header>
+  <div class="message">
+    <p id='target'>Place all your boats (5) on the left board</p>
+    <p>The board on the left is your board, the board on the right is your opponent's board</p>
+  </div>
+  <div class="info">
+    <div class="ally">
+      <p id='count'>Your Boat Count</p>
+      <button id='kek'>Rotate Your Boat</button>
+    </div>
+
+    <div class="ennemy">
+      <p>Shooting Board</p>
+      <p id='countEnnemy'>Ennemy Boat Count : 5</p>
+    </div>
+    <div id="canvasP5">
+
+    </div>
   </div>
 
-  <div class="ennemy">
-    <p id='countEnnemy'>Ennemy Boat Count : 5</p>
-    <p>Shooting Board</p>
-  </div>
+
+
 
   <button id="button">Start the game</button>
   <script src="/socket.io/socket.io.js"></script>

@@ -1,0 +1,58 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-rows: auto auto auto;
+      grid-template-rows: auto auto auto;
+}
+
+.info {
+  -ms-grid-row: 2;
+  grid-row: 2;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 84px;
+}
+
+#canvasP5 {
+  -webkit-box-ordinal-group: 3;
+      -ms-flex-order: 2;
+          order: 2;
+}
+
+.ennemy {
+  font-size: 24px;
+  -webkit-box-ordinal-group: 4;
+      -ms-flex-order: 3;
+          order: 3;
+}
+
+.message {
+  text-align: center;
+  margin-top: 32px;
+}
+
+#button {
+  margin: auto;
+}
+
+#kek {
+  font-size: 18px;
+  padding: 8px 32px 8px 32px;
+  border-radius: 10px;
+}
+
+#count {
+  font-size: 24px;
+}
+/*# sourceMappingURL=style.css.map */

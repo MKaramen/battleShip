@@ -1,0 +1,45 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    display: grid;
+    grid-template-rows: auto auto auto;
+}
+
+.info {
+    grid-row: 2;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 84px;
+}
+
+#canvasP5 {
+    order: 2;
+}
+
+.ennemy {
+    font-size: 24px;
+    order: 3;
+}
+
+.message {
+    text-align: center;
+    margin-top: 32px;
+}
+
+#button {
+    margin: auto;
+}
+
+#kek {
+    font-size: 18px;
+    padding: 8px 32px 8px 32px;
+    border-radius: 10px;
+}
+
+#count {
+    font-size: 24px;
+}

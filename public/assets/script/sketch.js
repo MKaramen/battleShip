@@ -51,8 +51,8 @@ const removePieces = (array, x, y) => {
 };
 
 function setup() {
-    createCanvas(board.cell * board.size * 2 + 90, board.cell * board.size);
-
+    let myCanvas = createCanvas(board.cell * board.size * 2 + 90, board.cell * board.size);
+    myCanvas.parent('canvasP5')
     // Create the boards
     board.createBoard();
     shoot.createBoard();
@@ -93,7 +93,6 @@ function setup() {
         console.log(rotating);
         console.log('clicked');
     })
-
 }
 
 function draw() {
@@ -104,7 +103,6 @@ function draw() {
     }
     shoot.display();
     count.innerHTML = `Your Boat Count : ${allBoat.length}`
-
 }
 
 // A mettre dans class piece 
@@ -134,9 +132,6 @@ function mousePressed() {
                 allBoat.push(boat);
                 sizePieces--;
 
-            } else {
-                p.innerHTML = "Invalid Move"
-                // console.log("Invalid move");
             }
 
         }
