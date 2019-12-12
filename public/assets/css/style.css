@@ -43,6 +43,10 @@ h1 {
 }
 
 #button {
+  font-size: 18px;
+  padding: 8px 32px 8px 32px;
+  border-radius: 10px;
+  max-width: 250px;
   margin: auto;
 }
 

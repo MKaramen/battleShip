@@ -282,7 +282,7 @@ socket.on('result', playerId => {
         p.innerHTML = 'You win'
         setTimeout(() => {
             window.location.reload();
-        }, 1000)
+        }, 3000)
 
     } else {
         p.innerHTML = 'You lose'
