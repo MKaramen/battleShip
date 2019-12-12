@@ -9,11 +9,19 @@
 </head>
 
 <body>
-  <p id='target'>Place all your boats on the board below (Left Click)</p>
-  <p id='count'>Your Boat Count</p>
-  <p id='countEnnemy'>Ennemy Boat Count : 5</p>
-  <p>Shooting Board</p>
-  <button id='kek'>Rotate</button>
+  <div class="ally">
+    <p id='target'>Place all your boats (5) on the board below (Left Click)</p>
+    <p id='count'>Your Boat Count</p>
+    <p>Your Board</p>
+    <button id='kek'>Rotate</button>
+  </div>
+
+  <div class="ennemy">
+    <p id='countEnnemy'>Ennemy Boat Count : 5</p>
+    <p>Shooting Board</p>
+  </div>
+
+  <button id="button">Start the game</button>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/p5.js"></script>
   <script src="assets/script/pieces.js"></script>

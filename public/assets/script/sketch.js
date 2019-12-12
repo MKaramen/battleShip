@@ -57,12 +57,6 @@ function setup() {
     board.createBoard();
     shoot.createBoard();
 
-    // Create button 
-    const button = document.createElement('button');
-    button.setAttribute('id', 'button');
-    button.innerHTML = 'Start the game';
-    const body = document.querySelector('body');
-    body.appendChild(button);
 
     // On click send data to the server and check if all pieces are placed 
     document.getElementById('button').addEventListener('click', async () => {
@@ -91,7 +85,6 @@ function setup() {
             // console.log("need to place all pieces");
         } else {
             p.innerHTML = 'Game Started Already'
-            console.log('Game started already');
         }
     });
 
