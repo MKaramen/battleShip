@@ -292,7 +292,10 @@ socket.on('reduceCount', playerId => {
 socket.on('result', playerId => {
     if (socket.id != playerId) {
         p.innerHTML = 'You win'
-        window.location.reload();
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000)
+
     } else {
         p.innerHTML = 'You lose'
     }
